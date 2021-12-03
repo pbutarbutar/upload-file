@@ -2,8 +2,8 @@ package main
 
 import (
 	_entity "brks/app/entity"
+	_router "brks/app/http"
 	_repo "brks/app/repository"
-	_router "brks/app/router"
 	"brks/config"
 	"context"
 	"net/http"
@@ -26,7 +26,6 @@ func init() {
 }
 
 func main() {
-
 	config.SetupModels()
 	db := config.GetDBConnection()
 	port := config.GetPortConnection()
@@ -34,25 +33,19 @@ func main() {
 	repoUpload := _repo.NewUploadRepository(db)
 	entityUpload := _entity.NewUploadEntity(repoUpload)
 	handlerload := _handler.NewUploadHandler(entityUpload)
-
 	routes := _router.GetRouters(handlerload)
-
 	srv := &http.Server{
 		Addr:    port,
 		Handler: routes,
 	}
-
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal().Err(err).Msg("fail to start service")
 		}
 	}()
-
 	log.Info().Str("address", port).Msg("service started")
-
 	<-done
 	log.Info().Msg("service is going to stop")
 
