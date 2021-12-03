@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog/log"
@@ -18,7 +19,7 @@ var (
 		"image/jpeg":                true,
 		"image/gif":                 true,
 		"image/png":                 true,
-		"application/pdf":           true,
+		"application/pdf":           false,
 		"image/vnd.adobe.photoshop": false,
 		"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": false,
 		"text/html": false,
@@ -92,7 +93,8 @@ func (u *UploadHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 
 	defer file.Close()
 
-	tempFile, err := ioutil.TempFile("static", "upload-*.png")
+	fileSet := "upload-*." + filepath.Ext(handler.Filename)
+	tempFile, err := ioutil.TempFile("static", fileSet)
 
 	if err != nil {
 		log.Error().Err(err).Msg(err.Error())
@@ -121,13 +123,6 @@ func (u *UploadHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 
 	//Store to repository
 	u.UploadEntity.Upload(r.Context(), upl)
-
-	//remove file temp
-	/*filePath := "static/" + handler.Filename
-	e := os.Remove(filePath)
-	if e != nil {
-		log.Error().Err(e).Msg("Cannot remove file")
-	}*/
 
 	utils.SendHTTPResponse(w, http.StatusBadRequest, apiResp)
 
