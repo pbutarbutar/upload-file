@@ -131,6 +131,6 @@ func (u *UploadHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 	//Store to repository
 	u.UploadEntity.Upload(r.Context(), upl)
 
-	utils.SendHTTPResponse(w, http.StatusBadRequest, apiResp)
+	utils.SendHTTPResponse(w, http.StatusOK, apiResp)
 
 }
