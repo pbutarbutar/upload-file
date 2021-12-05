@@ -61,7 +61,7 @@ func (u *UploadHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 	apiResp := models.ApiResponse{
 		Success: true,
 		Status:  400,
-		Message: "Successfully",
+		Message: "Error!",
 		Data:    make(map[string]interface{}),
 	}
 
@@ -131,6 +131,8 @@ func (u *UploadHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 	//Store to repository
 	u.UploadEntity.Upload(r.Context(), upl)
 
+	apiResp.Status = http.StatusOK
+	apiResp.Message = "Successfully"
 	utils.SendHTTPResponse(w, http.StatusOK, apiResp)
 
 }
