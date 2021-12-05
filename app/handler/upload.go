@@ -51,7 +51,7 @@ func NewUploadHandler(up domain.UploadEntity) UploadInt {
 }
 
 func (u *UploadHandler) HtmlUpload(w http.ResponseWriter, r *http.Request) {
-	fs := http.FileServer(http.Dir("./public"))
+	fs := http.FileServer(http.Dir("./static"))
 	r.URL.Path = "/upload.html"
 	fs.ServeHTTP(w, r)
 }
@@ -101,7 +101,7 @@ func (u *UploadHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	fileSet := "upload-*." + filepath.Ext(handler.Filename)
-	tempFile, err := ioutil.TempFile("static", fileSet)
+	tempFile, err := ioutil.TempFile("uploads", fileSet)
 
 	if err != nil {
 		log.Error().Err(err).Msg(err.Error())
