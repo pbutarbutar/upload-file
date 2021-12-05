@@ -35,6 +35,7 @@ func init() {
 }
 
 type UploadInt interface {
+	HtmlUpload(w http.ResponseWriter, r *http.Request)
 	UploadFile(w http.ResponseWriter, r *http.Request)
 }
 
@@ -47,6 +48,12 @@ func NewUploadHandler(up domain.UploadEntity) UploadInt {
 		UploadEntity: up,
 	}
 
+}
+
+func (u *UploadHandler) HtmlUpload(w http.ResponseWriter, r *http.Request) {
+	fs := http.FileServer(http.Dir("./public"))
+	r.URL.Path = "/upload.html"
+	fs.ServeHTTP(w, r)
 }
 
 func (u *UploadHandler) UploadFile(w http.ResponseWriter, r *http.Request) {

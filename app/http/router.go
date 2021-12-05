@@ -18,6 +18,17 @@ type Route struct {
 var routes = []Route{}
 
 func GetRouters(hup handler.UploadInt) *mux.Router {
+
+	htmlUpload := []Route{
+		{
+			"Upload Images",
+			"GET",
+			"/v1/upload",
+			hup.HtmlUpload,
+			false,
+		},
+	}
+
 	uploadimage := []Route{
 		{
 			"Upload Images",
@@ -27,7 +38,7 @@ func GetRouters(hup handler.UploadInt) *mux.Router {
 			false,
 		},
 	}
-	routes = append(routes, uploadimage...)
+	routes = append(routes, append(htmlUpload, uploadimage...)...)
 
 	router := mux.NewRouter().StrictSlash(true)
 
