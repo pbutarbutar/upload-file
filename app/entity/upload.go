@@ -1,8 +1,9 @@
 package entity
 
 import (
-	"brks/domain"
 	"context"
+
+	"github.com/pbutarbutar/upload-file/domain"
 )
 
 type UploadEntity struct {

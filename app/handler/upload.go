@@ -1,14 +1,16 @@
 package handler
 
 import (
-	"brks/app/models"
-	"brks/app/utils"
-	"brks/domain"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
+
+	"github.com/pbutarbutar/upload-file/app/models"
+	"github.com/pbutarbutar/upload-file/app/utils"
+	"github.com/pbutarbutar/upload-file/domain"
 
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog/log"
@@ -57,16 +59,16 @@ func (u *UploadHandler) HtmlUpload(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UploadHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
-
+	startTime := time.Now()
 	apiResp := models.ApiResponse{
 		Success: true,
-		Status:  400,
 		Message: "Error!",
 		Data:    make(map[string]interface{}),
 	}
 
 	authToken := r.PostFormValue("auth")
 	if authToken != os.Getenv("SECRET") {
+		apiResp.ProcessTime = time.Since(startTime).Milliseconds()
 		apiResp.Success = false
 		apiResp.Message = "Invalid Access"
 		utils.SendHTTPResponse(w, http.StatusBadRequest, apiResp)
@@ -76,6 +78,7 @@ func (u *UploadHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(8 << 20)
 	file, handler, err := r.FormFile("file")
 	if err != nil {
+		apiResp.ProcessTime = time.Since(startTime).Milliseconds()
 		apiResp.Success = false
 		apiResp.Message = fmt.Sprintf("Upload error, %s", err.Error())
 		utils.SendHTTPResponse(w, http.StatusBadRequest, apiResp)
@@ -84,6 +87,7 @@ func (u *UploadHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	if _, ok := file.(Size); !ok {
+		apiResp.ProcessTime = time.Since(startTime).Milliseconds()
 		apiResp.Success = false
 		apiResp.Message = "Fail Upload"
 		utils.SendHTTPResponse(w, http.StatusBadRequest, apiResp)
@@ -92,6 +96,7 @@ func (u *UploadHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 
 	filetype := handler.Header.Get("Content-Type")
 	if !validateFileType[filetype] {
+		apiResp.ProcessTime = time.Since(startTime).Milliseconds()
 		apiResp.Success = false
 		apiResp.Message = fmt.Sprintf("invalid file type, %s", filetype)
 		utils.SendHTTPResponse(w, http.StatusBadRequest, apiResp)
@@ -105,6 +110,7 @@ func (u *UploadHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Error().Err(err).Msg(err.Error())
+		apiResp.ProcessTime = time.Since(startTime).Milliseconds()
 		apiResp.Success = false
 		apiResp.Message = fmt.Sprintf("err: %s", err.Error())
 		utils.SendHTTPResponse(w, http.StatusBadRequest, apiResp)
@@ -115,6 +121,7 @@ func (u *UploadHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 	fileBytes, err := ioutil.ReadAll(file)
 	if err != nil {
 		log.Error().Err(err).Msg(err.Error())
+		apiResp.ProcessTime = time.Since(startTime).Milliseconds()
 		apiResp.Success = false
 		apiResp.Message = fmt.Sprintf("err: %s", err.Error())
 		utils.SendHTTPResponse(w, http.StatusBadRequest, apiResp)
@@ -131,7 +138,7 @@ func (u *UploadHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 	//Store to repository
 	u.UploadEntity.Upload(r.Context(), upl)
 
-	apiResp.Status = http.StatusOK
+	apiResp.ProcessTime = time.Since(startTime).Milliseconds()
 	apiResp.Message = "Successfully"
 	utils.SendHTTPResponse(w, http.StatusOK, apiResp)
 

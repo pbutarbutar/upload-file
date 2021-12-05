@@ -1,8 +1,9 @@
 package http
 
 import (
-	"brks/app/handler"
 	"net/http"
+
+	"github.com/pbutarbutar/upload-file/app/handler"
 
 	"github.com/gorilla/mux"
 )

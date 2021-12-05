@@ -1,9 +1,10 @@
 package config
 
 import (
-	"brks/domain"
 	"fmt"
 	"os"
+
+	"github.com/pbutarbutar/upload-file/domain"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"

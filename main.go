@@ -1,10 +1,6 @@
 package main
 
 import (
-	_entity "brks/app/entity"
-	_router "brks/app/http"
-	_repo "brks/app/repository"
-	"brks/config"
 	"context"
 	"net/http"
 	"os"
@@ -12,7 +8,12 @@ import (
 	"syscall"
 	"time"
 
-	_handler "brks/app/handler"
+	_entity "github.com/pbutarbutar/upload-file/app/entity"
+	_router "github.com/pbutarbutar/upload-file/app/http"
+	_repo "github.com/pbutarbutar/upload-file/app/repository"
+	"github.com/pbutarbutar/upload-file/config"
+
+	_handler "github.com/pbutarbutar/upload-file/app/handler"
 
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog/log"

@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"brks/domain"
 	"context"
+
+	"github.com/pbutarbutar/upload-file/domain"
 
 	"github.com/jinzhu/gorm"
 )
